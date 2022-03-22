@@ -15,11 +15,15 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <!-- Feel free to update to what you want, but remember that --> 
     <!-- ImageJ plugins require an underscore '_' in the name... --> 
     <groupId>net.ijtools</groupId>
-    <artifactId>Plugin_Template</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <artifactId>Import_Psiche_Volume</artifactId>
+    <version>1.0.1</version>
 
-    <name>plugins/Plugin_Template.jar</name>
-    <description>Simple project template for ImageJ plugins</description>
+    <name>Import_Psiche_Volume</name>
+    <description>Import image volume file from Psyche beamline of SOLEIL synchrotron</description>
+	<inceptionYear>2018</inceptionYear>
+	<organization>
+		<name>INRAE</name>
+	</organization>
 
     <dependencies>
         <!-- When writing ImageJ/Fiji plugins, it is necessary to add a dependency 
