@@ -2,4 +2,4 @@
  * @author dlegland
  *
  */
-package net.soleil.psiche;
+package net.ijt.io.tomo;

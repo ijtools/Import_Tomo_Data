@@ -1,4 +1,4 @@
-package net.soleil.psiche;
+package net.ijt.io.tomo;
 
 import java.awt.FileDialog;
 import java.awt.Frame;
