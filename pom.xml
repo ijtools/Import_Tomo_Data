@@ -15,15 +15,30 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <!-- Feel free to update to what you want, but remember that --> 
     <!-- ImageJ plugins require an underscore '_' in the name... --> 
     <groupId>net.ijtools</groupId>
-    <artifactId>Import_Psiche_Volume</artifactId>
+    <artifactId>Import_Tomo_Data</artifactId>
     <version>1.0.2-SNAPSHOT</version>
 
-    <name>Import_Psiche_Volume</name>
-    <description>Import image volume file from Psyche beamline of SOLEIL synchrotron</description>
+    <name>Import_Tomo_Data</name>
+    <description>Import tomography data volume as 3D image. </description>
 	<inceptionYear>2018</inceptionYear>
 	<organization>
 		<name>INRAE</name>
 	</organization>
+	
+	<properties>
+		<package-name>net.ijt</package-name>
+    	<!-- Use ImageJ reference java version -->
+    	<maven.compiler.source>1.8</maven.compiler.source>
+    	<maven.compiler.target>1.8</maven.compiler.target>
+    	<!-- Generic source encoding -->
+    	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    
+		<license.licenseName>lgpl_v3</license.licenseName>
+		<license.copyrightOwners>INRAE.</license.copyrightOwners>
+
+		<!-- NB: Deploy releases to the SciJava Maven repository. -->
+		<releaseProfiles>deploy-to-scijava</releaseProfiles>
+	</properties>
 
     <dependencies>
         <!-- When writing ImageJ/Fiji plugins, it is necessary to add a dependency 
