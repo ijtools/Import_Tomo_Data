@@ -1,13 +1,5 @@
 package net.soleil.psiche;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.ImageStack;
-import ij.io.OpenDialog;
-import ij.measure.Calibration;
-import ij.plugin.PlugIn;
-import ij.process.FloatProcessor;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,11 +8,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.ImageStack;
+import ij.io.OpenDialog;
+import ij.measure.Calibration;
+import ij.plugin.PlugIn;
+import ij.process.FloatProcessor;
+
 /**
  * @author dlegland
  *
  */
-public class Read_Psiche_Volume implements PlugIn
+public class Read_Tomo_Data implements PlugIn
 {
 	@Override
 	public void run(String arg)
@@ -32,7 +32,7 @@ public class Read_Psiche_Volume implements PlugIn
 
 		if (null == path || 0 == path.length())
 		{
-			OpenDialog dlg = new OpenDialog("Choose .vol.info file", null, "*.vol.info");
+			OpenDialog dlg = new OpenDialog("Choose .vol file", null, "*.vol");
 			directory = dlg.getDirectory();
 			if (null == directory)
 				return;
@@ -47,13 +47,23 @@ public class Read_Psiche_Volume implements PlugIn
 			fileName = fileIn.getName();
 		}
 
-		if (!fileName.toLowerCase().endsWith(".vol.info"))
+		if (!fileName.toLowerCase().endsWith(".vol"))
 		{
-		    System.err.println("Expect input file extension to be .vol.info, abort");
+		    System.err.println("Expect input file extension to be '.vol', abort");
 			return;
 		}
 		
-		File file = new File(directory, fileName);
+		// check existence of vol.info file
+		String infoFileName = fileName + ".info";
+        File file = new File(directory, infoFileName);
+        if (!file.exists())
+        {
+            System.err.println("Could not find vol.info file, abort");
+            return;
+        }
+        
+        
+//		File file = new File(directory, fileName);
 		ImagePlus imagePlus;
 		try
 		{
@@ -77,6 +87,8 @@ public class Read_Psiche_Volume implements PlugIn
 
 	public ImagePlus readImage(File file) throws IOException
 	{
+	    
+	    
 //		String dataFileName = null;
 		int sizeX = 0;
 		int sizeY = 0;
@@ -106,16 +118,16 @@ public class Read_Psiche_Volume implements PlugIn
 
 		reader.close();
 
-		
-		// read image data
-		// (assumes all necessary information have been read)
+		// determine data file name
 		String fileName = file.getName();
-		String dataFileName = fileName.substring(0, fileName.length()-5);
+		String dataFileName = file.getName().substring(0, fileName.length()-5);
 		System.out.println("read data file: " + dataFileName);
-		File dataFile = new File(dataFileName);
-		dataFile = new File(file.getParentFile(), dataFile.getName());
+		File dataFile = new File(file.getParentFile(), dataFileName);
 		IJ.log("read data file: " + dataFile.getAbsolutePath());
 		IJ.log("  Volume size: " + sizeX + "x" + sizeY + "x"+ sizeZ);
+
+		// read image data
+        // (assumes all necessary information have been read)
 		ImageStack stack = readData(dataFile, sizeX, sizeY, sizeZ, 32, littleEndian);
 		
 		ImagePlus imagePlus = new ImagePlus(file.getName(), stack);
@@ -256,7 +268,7 @@ public class Read_Psiche_Volume implements PlugIn
 			return;
 		}
 		
-		Read_Psiche_Volume reader = new Read_Psiche_Volume();
+		Read_Tomo_Data reader = new Read_Tomo_Data();
 		ImagePlus imagePlus = reader.readImage(file);
 		
 		ImageStack stack = imagePlus.getStack();
