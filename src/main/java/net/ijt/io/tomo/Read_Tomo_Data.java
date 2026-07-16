@@ -6,7 +6,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileReader;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.LineNumberReader;
@@ -28,7 +27,7 @@ import ij.plugin.PlugIn;
 import ij.process.FloatProcessor;
 
 /**
- * Opens a file chooser to select a file with ".vol" extension, then parse the
+ * Opens a file chooser to select a file with ".vol" extension, then parses the
  * content of the associated ".vol.info" file, and read the content of the data
  * file.
  * 
@@ -41,11 +40,25 @@ public class Read_Tomo_Data implements PlugIn
 
     private static final FileFilter VOL_FILE_FILTER = new FileNameExtensionFilter("Tomo Data volume (*.vol)", "vol");
 
+    /**
+     * Opens a dialog to choose the file to read.
+     * 
+     * Note that file filter are not taken into account if WAT version of file
+     * dialog is used (see {@code Prefs.useJFileChooser}.
+     * 
+     * @param title
+     *            the title of the dialog
+     * @param fileFilters
+     *            an optional list of file filters.
+     * @return the File to open, or null if the "cancel" button was clicked.
+     */
     public static final File chooseFileToOpen(String title, FileFilter... fileFilters)
     {
-        if (!Prefs.useJFileChooser)
-        { return chooseFileToOpen_awt(title, fileFilters); }
+        return Prefs.useJFileChooser ? chooseFileToOpen_swing(title, fileFilters) : chooseFileToOpen_awt(title);
+    }
 
+    private static final File chooseFileToOpen_swing(String title, FileFilter... fileFilters)
+    {
         // create dialog using last open path
         final JFileChooser fileChooser = new JFileChooser(lastOpenDir);
 
@@ -71,6 +84,7 @@ public class Read_Tomo_Data implements PlugIn
         if (ret != JFileChooser.APPROVE_OPTION)
         { return null; }
 
+        // keep chosen directory for next call
         File selectedFile = fileChooser.getSelectedFile();
         lastOpenDir = selectedFile.toPath().getParent().toString();
 
@@ -78,28 +92,20 @@ public class Read_Tomo_Data implements PlugIn
         return selectedFile;
     }
 
-    private static final File chooseFileToOpen_awt(String title, FileFilter... fileFilters)
+    /**
+     * Chooses the file to open using AWT toolkit. Under windows, does not
+     * support management of FilenameFilter, so do not use it.
+     * 
+     * @param title
+     *            the title of the dialog.
+     * @return the chosen file
+     */
+    private static final File chooseFileToOpen_awt(String title)
     {
         Frame parent = IJ.getInstance();
 
-        FileDialog dlg = new FileDialog(parent, "Choose a file", FileDialog.LOAD);
+        FileDialog dlg = new FileDialog(parent, "Choose a '.vol' file", FileDialog.LOAD);
         dlg.setDirectory(lastOpenDir);
-
-        // Try to add file filters, but does not seem to work with Windows...
-        if (fileFilters.length > 0)
-        {
-            IJ.log("add file filter");
-            final FileFilter filter = fileFilters[0];
-            dlg.setFilenameFilter(new FilenameFilter()
-            {
-                @Override
-                public boolean accept(File dir, String name)
-                {
-                    return filter.accept(new File(dir, name));
-                }
-            });
-        }
-
         dlg.setVisible(true);
 
         String file = dlg.getFile();
@@ -121,7 +127,7 @@ public class Read_Tomo_Data implements PlugIn
         Path filePath = null;
         if (null == pathToFile || 0 == pathToFile.length())
         {
-            File volFile = chooseFileToOpen("Choose .vol file", VOL_FILE_FILTER);
+            File volFile = chooseFileToOpen("Choose a '.vol' file", VOL_FILE_FILTER);
             if (volFile == null) return;
             filePath = volFile.toPath();
         }
