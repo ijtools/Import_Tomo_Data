@@ -16,7 +16,7 @@ http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <!-- ImageJ plugins require an underscore '_' in the name... --> 
     <groupId>net.ijtools</groupId>
     <artifactId>Import_Tomo_Data</artifactId>
-    <version>1.1</version>
+    <version>1.1.1-SNAPSHOT</version>
 
     <name>Import_Tomo_Data</name>
     <description>Import tomography data volume as 3D image. </description>
